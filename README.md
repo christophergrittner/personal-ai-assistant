@@ -14,3 +14,7 @@ _coming soon_
 ## Setup
 
 _coming soon_
+
+## Upcoming features:
+
+- [ ] Chat History
