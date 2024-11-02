@@ -3,9 +3,13 @@ import json
 import websockets
 import asyncio
 from dotenv import load_dotenv
+import logging
 
 # Initialize environment variables from .env file
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 async def send_message(websocket, text):
     # Create the message event
@@ -36,6 +40,7 @@ async def main():
     
     try:
         async with websockets.connect(uri, extra_headers=headers) as websocket:
+            logger.info("Connected to WebSocket")
             print("Connected! Type your messages (type 'exit' to quit)")
             
             while True:
@@ -63,7 +68,7 @@ async def main():
                         break
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error occurred: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main()) 
