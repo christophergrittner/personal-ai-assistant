@@ -7,48 +7,61 @@ from dotenv import load_dotenv
 # Initialize environment variables from .env file
 load_dotenv()
 
-async def send_message():
-    # Connect to OpenAI's WebSocket endpoint
+async def send_message(websocket, text):
+    # Create the message event
+    message_event = {
+        "type": "conversation.item.create",
+        "item": {
+            "type": "message",
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_text",
+                    "text": text
+                }
+            ]
+        }
+    }
+    
+    # Send the message and request response
+    await websocket.send(json.dumps(message_event))
+    await websocket.send(json.dumps({"type": "response.create"}))
+
+async def main():
     uri = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01"
     headers = {
         "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
         "openai-beta": "realtime=v1"
     }
     
-    # Establish WebSocket connection with OpenAI
-    async with websockets.connect(uri, extra_headers=headers) as websocket:
-        # Prepare the message payload
-        # This follows OpenAI's realtime API event format:
-        # - type: specifies the event type
-        # - item: contains message details including role and content
-        message_event = {
-            "type": "conversation.item.create",
-            "item": {
-                "type": "message",
-                "role": "user",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": "Hello!"
-                    }
-                ]
-            }
-        }
-        
-        # Send the message to OpenAI
-        await websocket.send(json.dumps(message_event))
-        
-        # Request OpenAI to generate a response
-        await websocket.send(json.dumps({"type": "response.create"}))
-        
-        # Listen for the response
-        while True:
-            response = await websocket.recv()
-            print(f"Received: {response}")
-
-async def main():
     try:
-        await send_message()
+        async with websockets.connect(uri, extra_headers=headers) as websocket:
+            print("Connected! Type your messages (type 'exit' to quit)")
+            
+            while True:
+                # Get user input
+                user_input = input("You: ")
+                if user_input.lower() == 'exit':
+                    break
+                
+                # Send message
+                await send_message(websocket, user_input)
+                
+                # Initialize response collection
+                print("Assistant: ", end="")
+                
+                # Listen for responses
+                while True:
+                    response = await websocket.recv()
+                    response_data = json.loads(response)
+                    
+                    # Print only the delta text without the "Assistant:" prefix
+                    if response_data.get("type") == "response.audio_transcript.delta":
+                        print(response_data.get("delta"), end="", flush=True)
+                    elif response_data.get("type") == "response.done":
+                        print("\n")  # Add newline after response is complete
+                        break
+
     except Exception as e:
         print(f"Error: {e}")
 
