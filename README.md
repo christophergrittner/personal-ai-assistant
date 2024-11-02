@@ -1,6 +1,7 @@
-# personal-ai-assistant
+# Personal AI Assistant
 
 A Python-based personal AI assistant that uses OpenAI's API to help with daily tasks through voice commands.
+I am creating this personal assistant out of my own motivation to help me handle several tasks throughout my day.
 
 ## Features
 
