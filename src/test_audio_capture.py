@@ -100,12 +100,10 @@ def main():
         input("Press Enter to start recording...")
         tester.start_recording()
         input("Recording... Press Enter to stop.")
-        
-        if audio_data is not None:
-            save_audio_file(audio_data)
-            print(f"Recording completed and saved!")
-        else:
-            print("No audio data captured.")
+
+        audio_data = tester.stop_recording()
+        save_audio_file(audio_data)
+        print(f"Recording completed and saved!")
             
     except Exception as e:
         logger.error(f"Error in main: {e}")
