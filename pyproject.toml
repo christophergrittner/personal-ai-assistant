@@ -12,6 +12,8 @@ python-dotenv = "^1.0.1"
 logging = "^0.4.9.6"
 sounddevice = "^0.5.1"
 numpy = "^2.1.2"
+pydub = "^0.25.1"
+soundfile = "^0.12.1"
 
 
 [build-system]
