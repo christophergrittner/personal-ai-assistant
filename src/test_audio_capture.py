@@ -8,7 +8,7 @@ import queue
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SAMPLE_RATE = 26000
+SAMPLE_RATE = 16000  # Must be 16kHz for OpenAI Realtime API
 CHANNELS = 1
 CHUNK_SAMPLES = int(SAMPLE_RATE * 0.5)  # 0.5 seconds chunks
 

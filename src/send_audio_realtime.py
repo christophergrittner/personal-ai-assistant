@@ -43,6 +43,11 @@ async def send_audio_to_realtime():
             save_audio_file(audio_data)
             
             if audio_data is not None and audio_data.size > 0:
+                # Add debug logging before sending
+                print(f"Audio data shape: {audio_data.shape}")
+                print(f"Sample rate: {SAMPLE_RATE}")
+                print(f"Audio duration: {len(audio_data) / SAMPLE_RATE:.2f} seconds")
+                
                 # Convert audio data to float32 (-1 to 1 range)
                 float32_data = audio_data.astype(np.float32) / 32767.0
                 base64_audio = base64_encode_audio(float32_data)
