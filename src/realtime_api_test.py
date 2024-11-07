@@ -72,6 +72,11 @@ async def main():
         "openai-beta": "realtime=v1"
     }
 
+
+    # TODO: Fix getting 2 responses in the loop
+    # TODO: Continuously record audio again
+    # TODO: Make audio more natural
+
     async with websockets.connect(uri, extra_headers=headers) as websocket:
         # Update session
         await websocket.send(json.dumps({
