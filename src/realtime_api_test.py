@@ -62,8 +62,6 @@ async def main():
 
     # Record audio
     audio_data = record_audio()
-
-    # Convert to base64 string
     base64_audio = convert_to_base64(audio_data)
 
     uri = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01"
@@ -78,7 +76,9 @@ async def main():
     # TODO: Make audio more natural
 
     async with websockets.connect(uri, extra_headers=headers) as websocket:
-        # Update session
+        # Add debug logging
+        print("\n=== Starting Session ===")
+        
         await websocket.send(json.dumps({
             "type": "session.update",
             "session": {
@@ -89,10 +89,12 @@ async def main():
                 "instructions": "Please be concise and direct in your responses",
             }
         }))
+        print(">>> Sent session.update")
         response = await websocket.recv()
-        print(f"Session update response: {response}")
+        print("<<< Received session response")
 
         while True:
+            print("\n=== Starting Conversation Turn ===")
             # Send audio
             event = {
                 "type": "conversation.item.create",
@@ -108,11 +110,12 @@ async def main():
                 }
             }
             
+            print(">>> Sending audio")
             await websocket.send(json.dumps(event))
             audio_response = await websocket.recv()
             print(f"Audio submission response: {audio_response}")
 
-            # Request response
+            print(">>> Requesting response")
             await websocket.send(json.dumps({
                 "type": "response.create",
                 "response": {
@@ -121,6 +124,7 @@ async def main():
             }))
 
             # Get response
+            print("=== Starting Response Stream ===")
             while True:
                 response = await websocket.recv()
                 response_data = json.loads(response)
